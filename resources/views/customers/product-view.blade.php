@@ -138,7 +138,7 @@
                                         <button type="button"
                                             @click="selectedSize='{{ $size }}'; stock={{ $qty }}; quantity=1"
                                             :class="selectedSize === '{{ $size }}' 
-                                                    ? 'border-gray-900 bg-gray-100 ' 
+                                                    ? 'border-gray-900 bg-gray-100' 
                                                     : 'border-gray-300 hover:border-gray-400'"
                                             class="w-12 h-12 rounded-md border flex items-center justify-center 
                                                 text-sm font-medium text-gray-900 cursor-pointer transition">
@@ -146,12 +146,10 @@
                                         </button>
                                     @else
                                         <button type="button" disabled
+                                            title="Out of Stock"
                                             class="w-12 h-12 border border-gray-200 text-gray-400 rounded-md 
-                                                flex items-center justify-center relative opacity-50 cursor-not-allowed">
+                                                flex items-center text-sm font-medium justify-center opacity-60 cursor-not-allowed">
                                             {{ $size }}
-                                            <span class="absolute inset-0 flex items-center justify-center">
-                                                <span class="w-6 h-0.5 bg-gray-400 rotate-45"></span>
-                                            </span>
                                         </button>
                                     @endif
                                 @endforeach

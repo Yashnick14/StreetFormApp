@@ -16,7 +16,7 @@
             Customers
         </a>
 
-        <a href="#" class="px-4 py-2 rounded-lg transition hover:bg-gray-900 text-white">
+        <a href="{{ route('admin.orders') }}" class="px-4 py-2 rounded-lg transition hover:bg-gray-900 text-white">
             Orders
         </a>
 

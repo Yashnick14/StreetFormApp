@@ -68,14 +68,14 @@ class Checkout extends Component
         }
 
         if ($this->payment_method === 'cod') {
-                // ✅ Re-attach product details to items for confirmation modal
-                foreach ($this->items as $item) {
-                    $item->product = Product::find($item->product_id);
-                }
-
-                $this->showConfirmModal = true;
-                return;
+            // ✅ Re-attach product details to items for confirmation modal
+            foreach ($this->items as $item) {
+                $item->product = Product::find($item->product_id);
             }
+
+            $this->showConfirmModal = true;
+            return;
+        }
 
         // ✅ Card → create pending order then redirect to Stripe
         if ($this->payment_method === 'card') {
@@ -115,7 +115,7 @@ class Checkout extends Component
                 'totalprice'     => $this->total,
             ]);
 
-            // 🔹 Save order items immediately
+            // 🔹 Save order items (⚠️ DO NOT reduce stock here → Stripe webhook will do it)
             foreach ($cartItems as $ci) {
                 OrderItem::create([
                     'order_id'      => (string) $order->_id,
@@ -145,7 +145,7 @@ class Checkout extends Component
                 'payment_method_types' => ['card'],
                 'mode' => 'payment',
                 'line_items' => $lineItems,
-                'success_url' => env('STRIPE_SUCCESS_URL'),
+                'success_url' => route('checkout.success') . '?session_id={CHECKOUT_SESSION_ID}',
                 'cancel_url'  => env('STRIPE_CANCEL_URL'),
                 'metadata' => [
                     'order_id'    => (string) $order->_id,
@@ -157,62 +157,71 @@ class Checkout extends Component
         }
     }
 
-public function saveOrder()
-{
-    try {
-        $order = Order::create([
-            'customer_id'    => (string) Auth::user()->customer->id,
-            'firstname'      => $this->firstname,
-            'lastname'       => $this->lastname,
-            'email'          => $this->email,
-            'phone'          => $this->phone,
-            'house_number'   => $this->house_number,
-            'street'         => $this->street,
-            'city'           => $this->city,
-            'postal_code'    => $this->postal_code,
-            'payment_method' => 'cod',
-            'orderdate'      => now(),
-            'orderstatus'    => 'pending',
-            'totalprice'     => $this->total,
-        ]);
+    public function saveOrder()
+    {
+        try {
+            $order = Order::create([
+                'customer_id'    => (string) Auth::user()->customer->id,
+                'firstname'      => $this->firstname,
+                'lastname'       => $this->lastname,
+                'email'          => $this->email,
+                'phone'          => $this->phone,
+                'house_number'   => $this->house_number,
+                'street'         => $this->street,
+                'city'           => $this->city,
+                'postal_code'    => $this->postal_code,
+                'payment_method' => 'cod',
+                'orderdate'      => now(),
+                'orderstatus'    => 'pending',
+                'totalprice'     => $this->total,
+            ]);
 
-        foreach ($this->items as $item) {
-            $product = Product::find($item->product_id);
-            if ($product) {
-                OrderItem::create([
-                    'order_id'      => (string) $order->_id,
-                    'product_id'    => $product->id,
-                    'orderquantity' => $item->quantity,
-                    'ordersize'     => $item->size,
-                    'orderprice'    => $item->unitprice,
-                ]);
+            foreach ($this->items as $item) {
+                $product = Product::find($item->product_id);
+                if ($product) {
+                    OrderItem::create([
+                        'order_id'      => (string) $order->_id,
+                        'product_id'    => $product->id,
+                        'orderquantity' => $item->quantity,
+                        'ordersize'     => $item->size,
+                        'orderprice'    => $item->unitprice,
+                    ]);
+
+                    // 🔽 Reduce stock only for COD
+                    $stockData = $product->stockquantity ?? [];
+                    if ($item->size && isset($stockData[$item->size])) {
+                        $stockData[$item->size] = max(0, $stockData[$item->size] - $item->quantity);
+                    } else {
+                        $stockData['default'] = max(0, ($stockData['default'] ?? 0) - $item->quantity);
+                    }
+                    $product->stockquantity = $stockData;
+                    $product->save();
+                }
             }
+
+            Payment::create([
+                'order_id'      => (string) $order->_id,
+                'paymentmethod' => 'cod',
+                'amount'        => $this->total,
+                'paymentdate'   => now(),
+            ]);
+
+            // Clear cart completely
+            $cart = CartModel::where('customer_id', (string) Auth::id())->first();
+            if ($cart) {
+                $cart->items()->delete();
+                $cart->delete();
+            }
+
+            $this->showConfirmModal = false;
+            $this->dispatch('toast', type: 'success', message: 'Order placed successfully!');
+             return redirect()->route('order.confirmation', ['orderId' => $order->_id]);
+
+        } catch (\Exception $e) {
+            \Log::error('Order save failed: '.$e->getMessage());
+            $this->dispatch('toast', type: 'error', message: 'Failed to save order.');
         }
-
-        Payment::create([
-            'order_id'      => (string) $order->_id,
-            'paymentmethod' => 'cod',
-            'amount'        => $this->total,
-            'paymentdate'   => now(),
-        ]);
-
-        // Clear cart completely
-        $cart = CartModel::where('customer_id', (string) Auth::id())->first();
-        if ($cart) {
-            $cart->items()->delete();
-            $cart->delete();
-        }
-
-        $this->showConfirmModal = false;
-        $this->dispatch('toast', type: 'success', message: 'Order placed successfully!');
-        return redirect()->route('home');
-
-    } catch (\Exception $e) {
-        \Log::error('Order save failed: '.$e->getMessage());
-        $this->dispatch('toast', type: 'error', message: 'Failed to save order.');
     }
-}
-
 
     public function render()
     {

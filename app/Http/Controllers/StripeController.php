@@ -9,6 +9,7 @@ use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Cart;
 use App\Models\Product;
+use App\Models\OrderItem;
 
 class StripeController extends Controller
 {
@@ -39,7 +40,7 @@ class StripeController extends Controller
             'payment_method_types' => ['card'],
             'mode' => 'payment',
             'line_items' => $lineItems,
-            'success_url' => env('STRIPE_SUCCESS_URL') . '?session_id={CHECKOUT_SESSION_ID}',
+            'success_url' => route('checkout.success', ['orderId' => $request->order_id]) . '?session_id={CHECKOUT_SESSION_ID}',
             'cancel_url'  => env('STRIPE_CANCEL_URL'),
             // ✅ Always cast to string for Mongo consistency
             'metadata' => [
@@ -54,9 +55,25 @@ class StripeController extends Controller
     /**
      * Success page after payment
      */
-    public function success()
+    public function success(Request $request)
     {
-        return view('checkout.success');
+        $sessionId = $request->get('session_id');
+
+        if (!$sessionId) {
+            return redirect()->route('home')->with('error', 'Missing session ID.');
+        }
+
+        \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
+        $session = \Stripe\Checkout\Session::retrieve($sessionId);
+
+        // Fetch orderId from metadata
+        $orderId = $session->metadata->order_id ?? null;
+
+        if ($orderId) {
+            return redirect()->route('order.confirmation', ['orderId' => $orderId]);
+        }
+
+        return redirect()->route('home')->with('error', 'Order not found.');
     }
 
     /**
@@ -113,6 +130,29 @@ class StripeController extends Controller
                         ]);
                     }
 
+                    // ✅ Reduce stock based on order items
+                    try {
+                        $orderItems = OrderItem::where('order_id', (string) $order->_id)->get();
+                        foreach ($orderItems as $item) {
+                            $product = Product::find($item->product_id);
+                            if ($product) {
+                                $stockData = $product->stockquantity ?? [];
+                                if ($item->ordersize && isset($stockData[$item->ordersize])) {
+                                    $stockData[$item->ordersize] = max(0, $stockData[$item->ordersize] - $item->orderquantity);
+                                } else {
+                                    $stockData['default'] = max(0, ($stockData['default'] ?? 0) - $item->orderquantity);
+                                }
+                                $product->stockquantity = $stockData;
+                                $product->save();
+                            }
+                        }
+                        \Log::info("📦 Stock reduced for order", ['order_id' => (string) $order->_id]);
+                    } catch (\Exception $e) {
+                        \Log::error("❌ Stock reduction failed: " . $e->getMessage(), [
+                            'order_id' => (string) $order->_id
+                        ]);
+                    }
+
                     // ✅ Clear cart
                     if ($customerId) {
                         $cart = Cart::where('customer_id', (string) $customerId)->first();
@@ -132,8 +172,6 @@ class StripeController extends Controller
                             ]);
                         }
                     }
-
-
                 }
             }
         }
