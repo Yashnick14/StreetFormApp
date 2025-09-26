@@ -17,13 +17,13 @@
 
                 <!-- Premium Buttons -->
                 <div class="mt-10 flex justify-center space-x-6">
-                    <a href="#"
+                    <a href="{{ route('men.products') }}"
                         class="bg-black text-white px-8 py-3 rounded-md text-lg font-semibold shadow-lg border border-white 
                         hover:bg-gray-900 hover:scale-105 transition transform duration-300">
                         Shop Men
                     </a>
 
-                    <a href="#"
+                    <a href="{{ route('women.products') }}"
                         class="bg-white text-black px-8 py-3 rounded-md text-lg font-semibold shadow-lg border border-black 
                         hover:bg-gray-100 hover:scale-105 transition transform duration-300">
                         Shop Women

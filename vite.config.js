@@ -8,6 +8,7 @@ export default defineConfig({
                 "resources/css/app.css",
                 "resources/js/app.js",
                 "resources/js/admin/products.js",
+                "resources/js/customer/wishlist.js",
             ],
             refresh: true,
         }),

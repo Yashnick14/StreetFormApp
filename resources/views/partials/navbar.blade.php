@@ -14,64 +14,63 @@
     </div>
 
     <!-- Right Side Icons -->
-    <div class="flex items-center space-x-6 text-sm">
-        <!-- Username -->
-        @auth
-            <span class="text-green-400">{{ auth()->user()->username }}</span>
-        @endauth
+    <div class="flex items-center space-x-8 text-sm">
+        <!-- Account Dropdown -->
+        <div class="relative flex items-center" x-data="{ open: false }">
+            <button @click="open = !open" class="hover:text-gray-400 focus:outline-none">
+                <i class="fa-regular fa-user text-l"></i> <!-- ⬅️ Bigger user icon -->
+            </button>
 
-        <!-- Account -->
-        <a href="#" class="hover:text-gray-400">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24"
-                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                 stroke-linejoin="round">
-                <circle cx="12" cy="8" r="5"/>
-                <path d="M20 21a8 8 0 0 0-16 0"/>
-            </svg>
+        <!-- Dropdown Menu -->
+        <div x-show="open" 
+            @click.away="open = false"
+            x-transition
+            class="absolute right-0 mt-48 w-44 bg-white text-black rounded-md shadow-lg py-2 z-50 text-left">
+
+            @auth
+                <!-- Greeting -->
+                <div class="px-4 py-2 text-sm font-medium text-gray-700 border-b">
+                    Hi, {{ auth()->user()->username }}
+                </div>
+            @endauth
+
+            <!-- Links -->
+            <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100">Dashboard</a>
+            <a href="{{ route('wishlist.index') }}" class="block px-4 py-2 text-sm hover:bg-gray-100">My Wishlist</a>
+
+            @auth
+                <!-- Logout -->
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="w-full text-left block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                        Logout
+                    </button>
+                </form>
+            @endauth
+        </div>
+
+        </div>
+
+        <!-- Cart -->
+        <a href="{{ route('cart.index') }}" class="hover:text-gray-400 relative flex items-center">
+            <i class="bi bi-bag text-l"></i> <!-- ⬅️ Bigger cart icon -->
+
+            @if(auth()->check())
+                @php
+                    $cart = \App\Models\Cart::where('customer_id', auth()->id())->first();
+                    $cartCount = $cart ? \App\Models\CartItem::where('cart_id', $cart->_id)->sum('quantity') : 0;
+                @endphp
+                
+                @if($cartCount > 0)
+                    <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-medium">
+                        {{ $cartCount }}
+                    </span>
+                @else
+                    <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-medium" style="display: none;">
+                        0
+                    </span>
+                @endif
+            @endif
         </a>
-
-<!-- Cart -->
-<a href="{{ route('cart.index') }}" class="hover:text-gray-400 relative">
-    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24"
-         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-         stroke-linejoin="round">
-        <circle cx="8" cy="21" r="1"/>
-        <circle cx="19" cy="21" r="1"/>
-        <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
-    </svg>
-    
-    @if(auth()->check())
-        @php
-            $cart = \App\Models\Cart::where('customer_id', auth()->id())->first();
-            $cartCount = $cart ? \App\Models\CartItem::where('cart_id', $cart->_id)->sum('quantity') : 0;
-        @endphp
-        
-        @if($cartCount > 0)
-            <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-medium">
-                {{ $cartCount }}
-            </span>
-        @else
-            <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-medium" style="display: none;">
-                0
-            </span>
-        @endif
-    @endif
-</a>
-
-        <!-- Logout -->
-        @auth
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="hover:text-gray-400">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24"
-                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                         stroke-linejoin="round">
-                        <path d="m16 17 5-5-5-5"/>
-                        <path d="M21 12H9"/>
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                    </svg>
-                </button>
-            </form>
-        @endauth
     </div>
 </nav>

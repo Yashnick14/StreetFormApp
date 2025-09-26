@@ -20,6 +20,8 @@ Route::view('/register', 'auth.register')->name('register');
 // Root route
 Route::get('/', fn () => redirect()->route('login'));
 
+Route::view('/wishlist', 'customers.wishlist')->name('wishlist.index');
+
 // Customer routes
 Route::middleware(['auth','customer'])->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
@@ -29,6 +31,7 @@ Route::middleware(['auth','customer'])->group(function () {
     Route::get('/cart', Cart::class)->name('cart.index');
     Route::get('/checkout', Checkout::class)->name('checkout');
     Route::get('/order/confirmation/{orderId}', OrderConfirmation::class)->name('order.confirmation');
+    
 });
 
 // Stripe checkout routes

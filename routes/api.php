@@ -9,6 +9,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\StripeController;
+use App\Http\Controllers\WishlistController;
 
 // ------------------------------
 // Auth (public)
@@ -36,4 +37,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('cart', CartController::class)->except(['show']);
     Route::post('/cart/add', [CartController::class, 'add']);
     Route::get('/cart/count', [CartController::class, 'getCartCount']);
+
+    Route::get('/wishlist', [WishlistController::class, 'index']);
+    Route::post('/wishlist', [WishlistController::class, 'store']);
+    Route::delete('/wishlist/{id}', [WishlistController::class, 'destroy']);
 });
