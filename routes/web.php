@@ -10,28 +10,35 @@ use App\Livewire\Admin\OrderManagement;
 use App\Livewire\Customer\Cart;
 use App\Livewire\Customer\Checkout;
 use App\Http\Controllers\StripeController;
+use App\Http\Controllers\OrderController;
 use App\Livewire\Customer\OrderConfirmation;
+use App\Livewire\Customer\MenProducts;
+use App\Livewire\Customer\WomenProducts;
+use App\Livewire\Customer\AllProducts;
+use App\Livewire\Customer\Orders;
 
 
 // Public routes
 Route::view('/login', 'auth.login')->name('login');
 Route::view('/register', 'auth.register')->name('register');
+Route::view('/wishlist', 'customers.wishlist')->name('wishlist.index');
 
 // Root route
 Route::get('/', fn () => redirect()->route('login'));
 
-Route::view('/wishlist', 'customers.wishlist')->name('wishlist.index');
-
 // Customer routes
 Route::middleware(['auth','customer'])->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
-    Route::get('/men', [HomeController::class, 'men'])->name('men.products');
-    Route::get('/women', [HomeController::class, 'women'])->name('women.products');
+    Route::get('/men', MenProducts::class)->name('men.products');
+    Route::get('/women', WomenProducts::class)->name('women.products');
+    Route::get('/all', AllProducts::class)->name('all.products');
     Route::get('/products/{id}/view', [ProductController::class, 'view'])->name('products.view');
     Route::get('/cart', Cart::class)->name('cart.index');
     Route::get('/checkout', Checkout::class)->name('checkout');
     Route::get('/order/confirmation/{orderId}', OrderConfirmation::class)->name('order.confirmation');
-    
+     Route::get('/my-orders', [OrderController::class, 'index'])->name('customer.orders');
+    Route::get('/order/{id}/confirmation', [OrderController::class, 'show'])->name('order.confirmation');
+
 });
 
 // Stripe checkout routes

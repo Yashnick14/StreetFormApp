@@ -10,7 +10,7 @@
     <div class="hidden md:flex space-x-8 text-sm font-medium">
         <a href="{{ route('men.products') }}" class="hover:text-gray-400">Men</a>
         <a href="{{ route('women.products') }}" class="hover:text-gray-400">Women</a>
-        <a href="{{ route('home') }}" class="hover:text-gray-400">All</a>
+        <a href="{{ route('all.products') }}" class="hover:text-gray-400">All</a>
     </div>
 
     <!-- Right Side Icons -->
@@ -35,7 +35,8 @@
             @endauth
 
             <!-- Links -->
-            <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100">Dashboard</a>
+            <a href="{{ route('customer.orders') }}
+" class="block px-4 py-2 text-sm hover:bg-gray-100">Dashboard</a>
             <a href="{{ route('wishlist.index') }}" class="block px-4 py-2 text-sm hover:bg-gray-100">My Wishlist</a>
 
             @auth
