@@ -1,8 +1,8 @@
 <x-app-layout>
     <div class="max-w-6xl mx-auto py-10 px-6">
         <!-- Page Title -->
-        <h2 class="text-3xl font-bold mb-2">Order History</h2>
-        <p class="text-gray-600 mb-6">View and manage your past orders</p>
+        <h2 class="text-3xl font-bold mb-2 text-center">Order History</h2>
+        <p class="text-gray-600 mb-6 text-center">View and manage your past orders</p>
 
         @forelse($orders as $order)
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
@@ -14,7 +14,9 @@
                             <span class="inline-block px-2 py-1 text-xs font-medium rounded 
                                 {{ in_array(strtolower($order->orderstatus), ['paid','completed','delivered'])
                                     ? 'bg-green-100 text-green-700'
-                                    : 'bg-yellow-100 text-yellow-700' }}">
+                                    : (strtolower($order->orderstatus) === 'cancelled'
+                                        ? 'bg-red-100 text-red-700'
+                                        : 'bg-yellow-100 text-yellow-700') }}">
                                 {{ ucfirst($order->orderstatus) }}
                             </span>
                         </h3>
@@ -54,20 +56,24 @@
 
                 <!-- Actions -->
                 <div class="flex gap-3 mt-4">
-                    <a href="{{ route('order.confirmation', $order->_id) }}" 
-                   class="px-4 py-2 text-sm border border-gray-300 rounded-md flex items-center gap-2 hover:bg-gray-50 transition-colors">
-                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                   </svg>
-                   View Details
-                </a>
-                <button class="px-4 py-2 text-sm border border-gray-300 rounded-md flex items-center gap-2 hover:bg-gray-50 transition-colors">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                    </svg>
-                    Invoice
-                </button>
+                    <a href="{{ route('orders.tracking', $order->_id) }}" 
+                    class="px-4 py-2 text-sm border border-gray-300 rounded-md flex items-center gap-2 hover:bg-gray-50 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                        View Details
+                    </a>
+
+                    @if(in_array(strtolower($order->orderstatus), ['pending', 'paid']))
+                        <button onclick="cancelOrder('{{ $order->_id }}')"
+                            class="px-4 py-2 text-sm border border-red-500 text-red-600 rounded-md flex items-center gap-2 hover:bg-red-50 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                            Cancel
+                        </button>
+                    @endif
                 </div>
             </div>
         @empty
@@ -93,4 +99,6 @@
             </div>
         @endif
     </div>
+
+    @vite('resources/js/customer/order.js')
 </x-app-layout>

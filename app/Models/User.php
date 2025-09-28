@@ -13,7 +13,6 @@ use Laravel\Sanctum\HasApiTokens;
 class User extends Authenticatable
 {
     use HasApiTokens;
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
     use HasProfilePhoto;
     use Notifiable;
@@ -69,14 +68,15 @@ class User extends Authenticatable
     }
 
     public function getNameAttribute(): string
-{
-    $full = trim(($this->firstname ?? '') . ' ' . ($this->lastname ?? ''));
-    return $full !== '' ? $full : ($this->username ?? $this->email);
-}
+    {
+        $full = trim(($this->firstname ?? '') . ' ' . ($this->lastname ?? ''));
+        return $full !== '' ? $full : ($this->username ?? $this->email);
+    }
 
-    /**
-     * Relationships
-     */
+    public function getPhoneAttribute()
+    {
+        return $this->phones()->first()->phone ?? null;
+    }
 
     // 1 User → M UserPhone
     public function phones()

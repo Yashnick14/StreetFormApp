@@ -36,8 +36,8 @@ Route::middleware(['auth','customer'])->group(function () {
     Route::get('/cart', Cart::class)->name('cart.index');
     Route::get('/checkout', Checkout::class)->name('checkout');
     Route::get('/order/confirmation/{orderId}', OrderConfirmation::class)->name('order.confirmation');
-     Route::get('/my-orders', [OrderController::class, 'index'])->name('customer.orders');
-    Route::get('/order/{id}/confirmation', [OrderController::class, 'show'])->name('order.confirmation');
+    Route::get('/my-orders', [OrderController::class, 'index'])->name('customer.orders');
+    Route::get('/orders/{orderId}/tracking', [OrderController::class, 'show'])->name('orders.tracking');
 
 });
 

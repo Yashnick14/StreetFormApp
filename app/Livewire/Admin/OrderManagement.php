@@ -14,11 +14,10 @@ class OrderManagement extends Component
     public $search = '';
     public $sortBy = 'orderdate';
     public $sortDirection = 'desc';
-    public $statusUpdates = [];
-    
-    // Add these missing properties
-    public $showStatusModal = false;
-    public $selectedOrderId = null;
+
+    public $statusUpdates = [];       // hold status changes temporarily
+    public $showStatusModal = false;  // toggle modal
+    public $selectedOrderId = null;   // store order being edited
 
     protected $queryString = ['search', 'sortBy', 'sortDirection'];
 
@@ -35,34 +34,76 @@ class OrderManagement extends Component
         $this->sortBy = $field;
     }
 
-    // Add these missing methods
+    /**
+     * Open modal and preload status
+     */
     public function openStatusModal($orderId)
     {
         $this->selectedOrderId = $orderId;
+
+        $order = Order::find($orderId);
+        if ($order) {
+            $this->statusUpdates[$orderId] = $order->orderstatus;
+        }
+
         $this->showStatusModal = true;
     }
 
-    public function updateStatus($orderId)
-    {
-        if (isset($this->statusUpdates[$orderId]) && $this->statusUpdates[$orderId] !== '') {
-            $status = $this->statusUpdates[$orderId];
+    /**
+     * Change status and close modal
+     */
+public function changeStatus()
+{
+    if (!$this->selectedOrderId) return;
 
-            $order = Order::find($orderId);
-            if ($order) {
-                $order->update(['orderstatus' => $status]);
+    $newStatus = $this->statusUpdates[$this->selectedOrderId] ?? null;
+
+    if ($newStatus) {
+        $order = Order::find($this->selectedOrderId);
+        if ($order) {
+            $current = $order->orderstatus;
+
+            // Allowed transitions
+            $flow = [
+                'pending' => ['confirmed', 'cancelled'],
+                'confirmed' => ['out for delivery', 'cancelled'],
+                'out for delivery' => ['delivered', 'cancelled'],
+                'delivered' => [],      // final state
+                'cancelled' => []       // final state
+            ];
+
+            // Block invalid transitions
+            if (!in_array($newStatus, $flow[$current] ?? [])) {
+                session()->flash('error', " Cannot change status from {$current} to {$newStatus}.");
+                $this->showStatusModal = false;
+                return;
             }
 
-            // Reset just this dropdown so it always shows "Status"
-            $this->statusUpdates[$orderId] = '';
+            // Update valid transition
+            $order->update(['orderstatus' => $newStatus]);
 
-            session()->flash('message', 'Order status updated successfully!');
+            session()->flash('message', " Order #{$this->selectedOrderId} status updated to {$newStatus}.");
+        }
+    }
+
+    $this->showStatusModal = false;
+}
+
+
+    public function editSelected()
+    {
+        if (!$this->selectedOrderId) return;
+
+        $order = Order::find($this->selectedOrderId);
+        if ($order) {
+            $this->statusUpdates[$this->selectedOrderId] = $order->orderstatus;
+            $this->showStatusModal = true;
         }
     }
 
 
     public function render()
     {
-        // Remove the eager loading that was causing issues
         $query = Order::query();
 
         if ($this->search) {
@@ -76,7 +117,6 @@ class OrderManagement extends Component
             });
         }
 
-        // Get orders without relationships to avoid SQL issues
         $allOrders = $query
             ->orderBy($this->sortBy, $this->sortDirection)
             ->get();

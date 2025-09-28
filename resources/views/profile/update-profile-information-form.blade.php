@@ -52,11 +52,28 @@
             </div>
         @endif
 
-        <!-- Name -->
+        <!-- Username -->
         <div class="col-span-6 sm:col-span-4">
-            <x-label for="name" value="{{ __('Name') }}" />
-            <x-input id="name" type="text" class="mt-1 block w-full" wire:model="state.name" required autocomplete="name" />
-            <x-input-error for="name" class="mt-2" />
+            <x-label for="username" value="{{ __('Username') }}" />
+            <x-input id="username" type="text" class="mt-1 block w-full"
+                    wire:model="state.username" required autocomplete="username" />
+            <x-input-error for="username" class="mt-2" />
+        </div>
+
+        <!-- First Name -->
+        <div class="col-span-6 sm:col-span-4">
+            <x-label for="firstname" value="{{ __('First Name') }}" />
+            <x-input id="firstname" type="text" class="mt-1 block w-full"
+                    wire:model="state.firstname" autocomplete="given-name" />
+            <x-input-error for="firstname" class="mt-2" />
+        </div>
+
+        <!-- Last Name -->
+        <div class="col-span-6 sm:col-span-4">
+            <x-label for="lastname" value="{{ __('Last Name') }}" />
+            <x-input id="lastname" type="text" class="mt-1 block w-full"
+                    wire:model="state.lastname" autocomplete="family-name" />
+            <x-input-error for="lastname" class="mt-2" />
         </div>
 
         <!-- Email -->
@@ -81,8 +98,15 @@
                 @endif
             @endif
         </div>
-    </x-slot>
 
+        <!-- Phone -->
+        <div class="col-span-6 sm:col-span-4">
+            <x-label for="phone" value="{{ __('Phone') }}" />
+            <x-input id="phone" type="text" class="mt-1 block w-full"
+                    wire:model="state.phone" autocomplete="tel" />
+            <x-input-error for="phone" class="mt-2" />
+        </div>
+    </x-slot>
     <x-slot name="actions">
         <x-action-message class="me-3" on="saved">
             {{ __('Saved.') }}

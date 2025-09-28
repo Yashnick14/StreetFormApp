@@ -19,7 +19,7 @@
             </button>
         </div>
 
-        <!-- ✅ Category (show only on /all page, hide on /men & /women) -->
+        <!-- Category (show only on /all page, hide on /men & /women) -->
         @if(!Route::is('men.products') && !Route::is('women.products'))
             <div class="mb-6">
                 <h6 class="text-slate-900 text-sm font-semibold">Category</h6>

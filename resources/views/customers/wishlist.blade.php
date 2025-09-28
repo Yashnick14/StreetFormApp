@@ -1,38 +1,37 @@
 <x-app-layout>
-    <div class="max-w-5xl mx-auto py-12 px-6 text-center">
-        <!-- Centered Heading -->
-        <h1 class="text-2xl font-bold mb-6">My Wishlist</h1>
+    <div class="max-w-5xl mx-auto py-12 px-6">
+        <!-- Page Title -->
+        <h1 class="text-3xl font-bold mb-10 text-center">My Wishlist</h1>
 
-        <!-- Wishlist grid -->
-        <div id="wishlist-container" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 justify-center">
-            <!-- Wishlist products load here -->
+        <!-- Wishlist Items -->
+        <div id="wishlist-container" class="space-y-6">
+            <!-- Wishlist items will be loaded here -->
         </div>
 
         <!-- Empty state -->
-        <div id="wishlist-empty" class="hidden py-12 text-gray-500">
-            <p>Your wishlist is empty.</p>
+        <div id="wishlist-empty" class="hidden py-20 text-center text-gray-500">
+            <p class="text-lg">Your wishlist is empty.</p>
         </div>
 
-        <!-- 🔹 Card template -->
+        <!-- 🔹 Row Template -->
         <template id="wishlist-card-template">
-            <div class="w-full h-full">
-                <div class="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-xl transition flex flex-col h-full">
-                    <a class="product-link" href="#">
-                        <!-- Image -->
-                        <img class="product-image w-full h-72 object-cover" alt="">
-                    </a>
+            <div class="flex items-center justify-between border-b pb-4">
+                <!-- Product Info -->
+                <div class="flex items-center space-x-4">
+                    <img class="product-image w-20 h-20 object-cover rounded-md" alt="Product">
 
-                    <!-- Info -->
-                    <div class="p-4 flex flex-col flex-1">
-                        <h3 class="product-name text-sm font-semibold text-gray-900 truncate"></h3>
-                        <p class="product-description text-sm text-gray-500 mt-1 flex-1"></p>
-                        <p class="product-price mt-2 text-lg font-bold text-gray-900"></p>
-
-                        <!-- Remove button (added below original styling) -->
-                        <button class="remove-btn mt-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
-                            Remove
-                        </button>
+                    <div>
+                        <h3 class="product-name font-semibold text-lg"></h3>
+                        <p class="product-description text-sm text-gray-500"></p>
+                        <p class="product-price text-sm text-gray-700 font-medium"></p>
                     </div>
+                </div>
+
+                <!-- Remove Button -->
+                <div>
+                    <button class="remove-btn bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm">
+                        Remove
+                    </button>
                 </div>
             </div>
         </template>

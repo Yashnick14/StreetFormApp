@@ -10,6 +10,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\StripeController;
 use App\Http\Controllers\WishlistController;
+use App\Http\Controllers\OrderController;
 
 // ------------------------------
 // Auth (public)
@@ -41,4 +42,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/wishlist', [WishlistController::class, 'index']);
     Route::post('/wishlist', [WishlistController::class, 'store']);
     Route::delete('/wishlist/{id}', [WishlistController::class, 'destroy']);
+
+    Route::patch('/orders/{id}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
 });

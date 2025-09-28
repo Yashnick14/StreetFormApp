@@ -26,11 +26,15 @@ class Cart extends Component
         $this->cart = CartModel::where('customer_id', (string)Auth::id())->first();
         $this->items = $this->cart ? $this->cart->items : [];
 
-        // Attach product from MySQL manually
+        // Attach product from MySQL manually & ensure quantity is synced
         foreach ($this->items as $item) {
             $item->product = Product::find($item->product_id);
+
+            // Ensure Livewire knows about quantity
+            $item->quantity = (int) $item->quantity;
         }
     }
+
 
     public function addToCart($productId, $size = null, $quantity = 1)
     {

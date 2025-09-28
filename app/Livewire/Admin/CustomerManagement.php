@@ -54,15 +54,13 @@ class CustomerManagement extends Component
         session()->flash('message', 'Customer status updated successfully.');
     }
 
-    public function delete(Customer $customer)
+    public function editSelected()
     {
-        $customer->user()->delete();
-        $customer->delete();
-        session()->flash('message', 'Customer deleted successfully.');
-    }
+        $customer = $this->selectedCustomerModel;
+        if (!$customer) {
+            return;
+        }
 
-    public function edit(Customer $customer)
-    {
         $this->editingCustomer = $customer->id;
         $this->username   = $customer->user->username;
         $this->firstname  = $customer->user->firstname;
@@ -73,6 +71,21 @@ class CustomerManagement extends Component
 
         $this->showModal = true;
     }
+
+    public function deleteSelected()
+    {
+        $customer = $this->selectedCustomerModel;
+        if (!$customer) {
+            return;
+        }
+
+        $customer->user()->delete();
+        $customer->delete();
+
+        $this->selectedCustomer = null; // reset selection
+        session()->flash('message', 'Customer deleted successfully.');
+    }
+
 
     public function save()
     {

@@ -35,6 +35,6 @@
         </div>
     </div>
 
-    <!-- ✅ Filter Sidebar -->
+    <!-- Filter Sidebar -->
     @include('partials.filter-sidebar')
 </div>

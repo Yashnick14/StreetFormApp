@@ -20,7 +20,7 @@ class AllProducts extends Component
     public int $ceil = 1000;
 
     public array $typeOptions = ['Hoodies', 'Sweatshirts', 'T-Shirts', 'Cargo Pants', 'Jackets'];
-    public array $sizeOptions = ['XS','S','M','L','XL','XXL'];
+    public array $sizeOptions = ['XS','S','M','L','XL'];
     public array $categoryOptions = ['Men' => 1, 'Women' => 2];
 
     public function mount(): void
