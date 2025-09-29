@@ -78,6 +78,14 @@ class AuthController extends Controller
         }
 
         $user  = Auth::user();
+
+        // Block inactive users
+        if ($user->status === 'inactive') {
+            Auth::logout();
+
+            return back()->with('error', '⚠️ Account inactive. Please contact support.')
+                        ->withInput();
+        }
         $token = $user->createToken('api_token')->plainTextToken;
 
         return response()->json([

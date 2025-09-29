@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
 
     @if(session('api_token'))
     <meta name="api-token" content="{{ session('api_token') }}">
@@ -43,5 +44,8 @@
     </div>
 
     @livewireScripts
+
+    @stack('scripts')
+
 </body>
 </html>

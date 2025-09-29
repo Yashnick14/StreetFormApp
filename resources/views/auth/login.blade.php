@@ -9,7 +9,7 @@
         <div class="relative w-full max-w-md">
             <x-authentication-card class="backdrop-blur-sm bg-white/95 shadow-lg rounded-lg p-6">
                 <x-slot name="logo">
-                    <x-authentication-card-logo />
+                    <!-- <x-authentication-card-logo /> -->
                 </x-slot>
 
                 <!-- Validation Errors -->

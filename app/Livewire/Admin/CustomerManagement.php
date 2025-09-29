@@ -17,10 +17,14 @@ class CustomerManagement extends Component
     public $username, $firstname, $lastname, $email, $phone, $status;
     public $showModal = false;
 
-    public $selectedCustomer = null; // single selected customer ID
+    public $selectedCustomer = null; // selected customer ID
+    public $selectedStatus = null;   // track selected user's status
 
     protected $paginationTheme = 'tailwind';
 
+    /**
+     * Customers list (with search + pagination)
+     */
     public function getCustomersProperty()
     {
         return Customer::with(['user', 'user.phones'])
@@ -33,6 +37,9 @@ class CustomerManagement extends Component
             ->paginate($this->perPage);
     }
 
+    /**
+     * Selected customer model
+     */
     public function getSelectedCustomerModelProperty()
     {
         if (!$this->selectedCustomer) {
@@ -41,6 +48,18 @@ class CustomerManagement extends Component
         return Customer::with('user')->find($this->selectedCustomer);
     }
 
+    /**
+     * Update status when radio is selected
+     */
+    public function updatedSelectedCustomer($id)
+    {
+        $customer = Customer::with('user')->find($id);
+        $this->selectedStatus = $customer ? $customer->user->status : null;
+    }
+
+    /**
+     * Toggle active/inactive
+     */
     public function toggleSelectedStatus()
     {
         $customer = $this->selectedCustomerModel;
@@ -51,9 +70,15 @@ class CustomerManagement extends Component
         $newStatus = $customer->user->status === 'active' ? 'inactive' : 'active';
         $customer->user->update(['status' => $newStatus]);
 
+        // update Livewire property so button label refreshes
+        $this->selectedStatus = $newStatus;
+
         session()->flash('message', 'Customer status updated successfully.');
     }
 
+    /**
+     * Edit customer
+     */
     public function editSelected()
     {
         $customer = $this->selectedCustomerModel;
@@ -72,6 +97,9 @@ class CustomerManagement extends Component
         $this->showModal = true;
     }
 
+    /**
+     * Delete customer
+     */
     public function deleteSelected()
     {
         $customer = $this->selectedCustomerModel;
@@ -82,11 +110,13 @@ class CustomerManagement extends Component
         $customer->user()->delete();
         $customer->delete();
 
-        $this->selectedCustomer = null; // reset selection
+        $this->reset(['selectedCustomer', 'selectedStatus']);
         session()->flash('message', 'Customer deleted successfully.');
     }
 
-
+    /**
+     * Save updates
+     */
     public function save()
     {
         $customer = Customer::findOrFail($this->editingCustomer);
@@ -116,13 +146,23 @@ class CustomerManagement extends Component
             );
         }
 
-        $this->reset(['editingCustomer', 'username', 'firstname', 'lastname', 'email', 'phone', 'status', 'showModal']);
+        $this->reset([
+            'editingCustomer', 'username', 'firstname', 'lastname',
+            'email', 'phone', 'status', 'showModal'
+        ]);
+
         session()->flash('message', 'Customer updated successfully.');
     }
 
+    /**
+     * Close modal
+     */
     public function closeModal()
     {
-        $this->reset(['showModal', 'editingCustomer', 'username', 'firstname', 'lastname', 'email', 'phone', 'status']);
+        $this->reset([
+            'showModal', 'editingCustomer', 'username', 'firstname',
+            'lastname', 'email', 'phone', 'status'
+        ]);
     }
 
     public function render()

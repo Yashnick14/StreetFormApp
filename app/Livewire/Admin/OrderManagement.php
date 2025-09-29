@@ -66,6 +66,7 @@ public function changeStatus()
             // Allowed transitions
             $flow = [
                 'pending' => ['confirmed', 'cancelled'],
+                'paid' => ['confirmed', 'cancelled'],
                 'confirmed' => ['out for delivery', 'cancelled'],
                 'out for delivery' => ['delivered', 'cancelled'],
                 'delivered' => [],      // final state

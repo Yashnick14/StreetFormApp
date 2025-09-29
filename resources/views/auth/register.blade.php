@@ -9,20 +9,20 @@
         <div class="relative w-full max-w-md">
             <x-authentication-card class="backdrop-blur-sm bg-white/95 shadow-lg rounded-lg p-6">
                 <x-slot name="logo">
-                    <x-authentication-card-logo />
+                    <!-- <x-authentication-card-logo /> -->
                 </x-slot>
 
-                <!-- ✅ Validation Errors -->
+                <!-- Validation Errors -->
                 <x-validation-errors class="mb-4" />
 
-                <!-- ✅ Success Message -->
+                <!-- Success Message -->
                 @if (session('success'))
                     <div class="mb-4 font-medium text-sm text-green-600 bg-green-100 border border-green-300 rounded p-2 text-center">
                         {{ session('success') }}
                     </div>
                 @endif
 
-                <!-- ✅ Error Message -->
+                <!-- Error Message -->
                 @if (session('error'))
                     <div class="mb-4 font-medium text-sm text-red-600 bg-red-100 border border-red-300 rounded p-2 text-center">
                         {{ session('error') }}

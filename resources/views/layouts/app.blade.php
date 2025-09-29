@@ -4,6 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
         
         @if(session('api_token'))
             <meta name="api-token" content="{{ session('api_token') }}">
@@ -99,5 +100,7 @@
                 </div>
             </template>
         </div>
+        @include('partials.footer')
+
     </body>
 </html>

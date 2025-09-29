@@ -1,6 +1,13 @@
-<aside class="w-64 bg-gradient-to-b from-black via-gray-900 to-gray-800 text-white min-h-screen shadow-lg">
+<!-- Sidebar -->
+<aside 
+    class="fixed top-16 inset-y-0 left-0 w-64 bg-gradient-to-b from-black via-gray-900 to-gray-800 
+           text-white min-h-screen shadow-lg transform -translate-x-full lg:translate-x-0 
+           transition-transform duration-300 z-40 lg:static lg:top-0"
+    x-data
+    x-on:toggle-sidebar.window="$el.classList.toggle('-translate-x-full')">
 
-    <nav class="flex flex-col p-4 space-y-2">
+    <!-- ✅ Added pt-8 to push menu items down -->
+    <nav class="flex flex-col p-4 pt-8 space-y-2">
         <a href="{{ route('admin.dashboard') }}"
            class="px-4 py-2 rounded-lg transition {{ request()->routeIs('admin.dashboard') ? 'bg-gray-900 text-white font-semibold shadow' : 'hover:bg-gray-900 text-white' }}">
             Dashboard
@@ -16,11 +23,13 @@
             Customers
         </a>
 
-        <a href="{{ route('admin.orders') }}" class="px-4 py-2 rounded-lg transition hover:bg-gray-900 text-white">
+        <a href="{{ route('admin.orders') }}" 
+           class="px-4 py-2 rounded-lg transition hover:bg-gray-900 text-white">
             Orders
         </a>
 
-        <a href="#" class="px-4 py-2 rounded-lg transition hover:bg-gray-900 text-white">
+        <a href="#" 
+           class="px-4 py-2 rounded-lg transition hover:bg-gray-900 text-white">
             Reports
         </a>
     </nav>

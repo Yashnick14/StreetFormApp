@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\RateLimiter;
@@ -17,6 +19,7 @@ use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
 use App\Actions\Fortify\UpdateUserProfileInformation;
+use App\Models\User;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -40,42 +43,41 @@ class FortifyServiceProvider extends ServiceProvider
             return Limit::perMinute(5)->by($request->session()->get('login.id'));
         });
 
-// Login redirect with Sanctum + session handling
-$this->app->singleton(\Laravel\Fortify\Contracts\LoginResponse::class, function () {
-    return new class implements \Laravel\Fortify\Contracts\LoginResponse {
-        public function toResponse($request)
-        {
-            // ✅ Clear old session token
-            $request->session()->forget(['api_token']);
+        // Login redirect with Sanctum + session handling
+        $this->app->singleton(\Laravel\Fortify\Contracts\LoginResponse::class, function () {
+            return new class implements \Laravel\Fortify\Contracts\LoginResponse {
+                public function toResponse($request)
+                {
+                    // Clear old session token
+                    $request->session()->forget(['api_token']);
 
-            // ✅ Always use fresh user record
-            $user = \Illuminate\Support\Facades\Auth::user()->fresh();
+                    // Always use fresh user record
+                    $user = \Illuminate\Support\Facades\Auth::user()->fresh();
 
-            // ✅ Delete all old Sanctum tokens
-            $user->tokens()->delete();
+                    // Delete all old Sanctum tokens
+                    $user->tokens()->delete();
 
-            // ✅ Create a fresh Sanctum token
-            $token = $user->createToken('web_login')->plainTextToken;
+                    // Create a fresh Sanctum token
+                    $token = $user->createToken('web_login')->plainTextToken;
 
-            // ✅ Store new token in session
-            $request->session()->put('api_token', $token);
+                    // Store new token in session
+                    $request->session()->put('api_token', $token);
 
-            // ✅ If request is API, return JSON
-            if ($request->wantsJson()) {
-                return response()->json([
-                    'user'  => $user,
-                    'token' => $token,
-                ]);
-            }
+                    // If request is API, return JSON
+                    if ($request->wantsJson()) {
+                        return response()->json([
+                            'user'  => $user,
+                            'token' => $token,
+                        ]);
+                    }
 
-            // ✅ Redirect based on usertype
-            return $user->usertype === 'admin'
-                ? redirect()->route('admin.dashboard')
-                : redirect()->route('home');
-        }
-    };
-});
-
+                    // Redirect based on usertype
+                    return $user->usertype === 'admin'
+                        ? redirect()->route('admin.dashboard')
+                        : redirect()->route('home');
+                }
+            };
+        });
 
 
         // 2FA login redirect
@@ -104,7 +106,7 @@ $this->app->singleton(\Laravel\Fortify\Contracts\LoginResponse::class, function 
                 public function toResponse($request)
                 {
                     return redirect()->route('login')
-                        ->with('success', '✅ Account created successfully! Please login.');
+                        ->with('success', 'Account created successfully! Please login.');
                 }
             };
         });
@@ -116,9 +118,32 @@ $this->app->singleton(\Laravel\Fortify\Contracts\LoginResponse::class, function 
                 {
                     return back()
                         ->withInput($request->only('email', 'remember'))
-                        ->with('error', '❌ Invalid email or password.');
+                        ->with('error', 'Invalid email or password.');
                 }
             };
+        });
+
+        Fortify::authenticateUsing(function ($request) {
+            $user = User::where('email', $request->email)->first();
+
+            // No user found
+            if (!$user) {
+                return null; // default invalid credentials
+            }
+
+            // Wrong password
+            if (!Hash::check($request->password, $user->password)) {
+                return null; // default invalid credentials
+            }
+
+            // Inactive account
+            if ($user->status === 'inactive') {
+                throw ValidationException::withMessages([
+                    'email' => ['Account inactive. Please contact support.'],
+                ]);
+            }
+
+            return $user; // Success
         });
     }
 }

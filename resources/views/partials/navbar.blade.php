@@ -37,7 +37,7 @@
                 <!-- Links -->
                 <a href="{{ route('customer.orders') }}" class="block px-4 py-2 text-sm hover:bg-gray-100">My Orders</a>
                 <a href="{{ route('wishlist.index') }}" class="block px-4 py-2 text-sm hover:bg-gray-100">My Wishlist</a>
-                <a href="{{ route('profile.show') }}" class="block px-4 py-2 text-sm hover:bg-gray-100">Profile</a>
+                <!-- <a href="{{ route('profile.show') }}" class="block px-4 py-2 text-sm hover:bg-gray-100">Profile</a> -->
                 
                 @auth
                     <!-- Logout -->
