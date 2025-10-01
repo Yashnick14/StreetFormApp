@@ -15,5 +15,6 @@ class CartItem extends Model
         return $this->belongsTo(Cart::class, 'cart_id', '_id');
     }
 
-    // 🚫 Remove product() relation since we load manually in Livewire
+    // Removed product() relation since we load manually in Livewire
+
 }

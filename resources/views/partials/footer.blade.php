@@ -18,9 +18,9 @@
             <div>
                 <h6 class="text-white font-medium mb-4">CATEGORIES</h6>
                 <ul class="space-y-2">
-                    <li><a href="#" class="hover:text-white">Men</a></li>
-                    <li><a href="#" class="hover:text-white">Women</a></li>
-                    <li><a href="#" class="hover:text-white">All</a></li>
+                    <li><a href="{{ route('men.products') }}" class="hover:text-white">Men</a></li>
+                    <li><a href="{{ route('women.products') }}" class="hover:text-white">Women</a></li>
+                    <li><a href="{{ route('all.products') }}" class="hover:text-white">All</a></li>
                 </ul>
             </div>
 

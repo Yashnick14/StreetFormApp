@@ -106,15 +106,37 @@
                     <div>
                         <h3 class="text-base font-semibold text-slate-900 border-b border-gray-300 pb-2">Delivery information</h3>
                         <div class="mt-6 space-y-3 text-sm">
-                            <p><span class="font-semibold text-slate-700">Customer</span><br> {{ $order->firstname }} {{ $order->lastname }}</p>
-                            <p><span class="font-semibold text-slate-700">Shipping Method</span><br> Standard Delivery</p>
-                            <p><span class="font-semibold text-slate-700">Address</span><br> {{ $order->house_number }} {{ $order->street }}, {{ $order->city }}, {{ $order->postal_code }}</p>
-                            <p><span class="font-semibold text-slate-700">Phone</span><br> {{ $order->phone }}</p>
-                            <p><span class="font-semibold text-slate-700">Email</span><br> {{ $order->email }}</p>
+                            <p>
+                                <span class="font-semibold text-slate-700">Customer</span><br> 
+                                {{ $order->firstname }} {{ $order->lastname }}
+                            </p>
+
+                            <!-- Shipping Method with icon -->
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <span class="font-semibold text-slate-700">Shipping Method</span><br>
+                                    Standard Delivery
+                                </div>
+                                <img src="{{ asset('assets/images/delivery.png') }}" 
+                                    alt="Shipping Icon" 
+                                    class="w-10 h-10 object-contain">
+                            </div>
+
+                            <p>
+                                <span class="font-semibold text-slate-700">Address</span><br> 
+                                {{ $order->house_number }} {{ $order->street }}, {{ $order->city }}, {{ $order->postal_code }}
+                            </p>
+                            <p>
+                                <span class="font-semibold text-slate-700">Phone</span><br> 
+                                {{ $order->phone }}
+                            </p>
+                            <p>
+                                <span class="font-semibold text-slate-700">Email</span><br> 
+                                {{ $order->email }}
+                            </p>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>

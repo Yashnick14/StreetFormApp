@@ -36,28 +36,103 @@
 
         <!-- CHECKOUT FORM -->
         <div class="bg-white shadow-md rounded-lg p-6">
-            <form wire:submit.prevent="placeOrder" class="space-y-6">
+        <form wire:submit.prevent="placeOrder" class="space-y-6">
                 <h3 class="font-bold mb-3">DELIVERY DETAILS</h3>
 
-                <input type="text" wire:model="firstname" placeholder="First Name" class="w-full mb-3 rounded-md border-gray-300">
-                <input type="text" wire:model="lastname" placeholder="Last Name" class="w-full mb-3 rounded-md border-gray-300">
-                <input type="email" wire:model="email" placeholder="Email" class="w-full mb-3 rounded-md border-gray-300">
-                <input type="text" wire:model="phone" placeholder="Phone Number" class="w-full mb-3 rounded-md border-gray-300">
-                <input type="text" wire:model="house_number" placeholder="House Number" class="w-full mb-3 rounded-md border-gray-300">
-                <input type="text" wire:model="street" placeholder="Street" class="w-full mb-3 rounded-md border-gray-300">
-                <input type="text" wire:model="city" placeholder="City" class="w-full mb-3 rounded-md border-gray-300">
-                <input type="text" wire:model="postal_code" placeholder="Postal Code" class="w-full mb-3 rounded-md border-gray-300">
+                <!-- First Name -->
+                <div>
+                    <input type="text" wire:model="firstname" placeholder="First Name" 
+                        class="w-full rounded-md border-gray-300">
+                    @error('firstname') 
+                        <span class="text-sm text-red-600">{{ $message }}</span> 
+                    @enderror
+                </div>
+
+                <!-- Last Name -->
+                <div>
+                    <input type="text" wire:model="lastname" placeholder="Last Name" 
+                        class="w-full rounded-md border-gray-300">
+                    @error('lastname') 
+                        <span class="text-sm text-red-600">{{ $message }}</span> 
+                    @enderror
+                </div>
+
+                <!-- Email -->
+                <div>
+                    <input type="email" wire:model="email" placeholder="Email" 
+                        class="w-full rounded-md border-gray-300">
+                    @error('email') 
+                        <span class="text-sm text-red-600">{{ $message }}</span> 
+                    @enderror
+                </div>
+
+                <!-- Phone -->
+                <div>
+                    <input type="text" wire:model="phone" placeholder="Phone Number" 
+                        class="w-full rounded-md border-gray-300">
+                    @error('phone') 
+                        <span class="text-sm text-red-600">{{ $message }}</span> 
+                    @enderror
+                </div>
+
+                <!-- Address -->
+                <div>
+                    <input type="text" wire:model="house_number" placeholder="House Number" 
+                        class="w-full rounded-md border-gray-300">
+                    @error('house_number') 
+                        <span class="text-sm text-red-600">{{ $message }}</span> 
+                    @enderror
+                </div>
 
                 <div>
+                    <input type="text" wire:model="street" placeholder="Street" 
+                        class="w-full rounded-md border-gray-300">
+                    @error('street') 
+                        <span class="text-sm text-red-600">{{ $message }}</span> 
+                    @enderror
+                </div>
+
+                <div>
+                    <input type="text" wire:model="city" placeholder="City" 
+                        class="w-full rounded-md border-gray-300">
+                    @error('city') 
+                        <span class="text-sm text-red-600">{{ $message }}</span> 
+                    @enderror
+                </div>
+
+                <div>
+                    <input type="text" wire:model="postal_code" placeholder="Postal Code" 
+                        class="w-full rounded-md border-gray-300">
+                    @error('postal_code') 
+                        <span class="text-sm text-red-600">{{ $message }}</span> 
+                    @enderror
+                </div>
+
+                <!-- Payment Method -->
+                <div>
                     <h3 class="font-bold mb-3">PAYMENT METHOD</h3>
-                    <label class="flex items-center mb-2">
-                        <input type="radio" wire:model="payment_method" value="cod" class="text-black border-gray-300">
-                        <span class="ml-2">Cash on Delivery</span>
+                    
+                    <!-- Cash on Delivery -->
+                    <label class="flex items-center justify-between mb-2 border rounded-lg px-3 py-2 cursor-pointer hover:bg-gray-50">
+                        <div class="flex items-center">
+                            <input type="radio" wire:model="payment_method" value="cod" class="text-black border-gray-300">
+                            <span class="ml-2">Cash on Delivery</span>
+                        </div>
+                        <img src="{{ asset('assets/images/cash.png') }}" alt="COD" class="w-8 h-8 object-contain">
                     </label>
-                    <label class="flex items-center">
-                        <input type="radio" wire:model="payment_method" value="card" class="text-black border-gray-300">
-                        <span class="ml-2">Card Payment</span>
+
+                    <!-- Card Payment -->
+                    <label class="flex items-center justify-between border rounded-lg px-3 py-2 cursor-pointer hover:bg-gray-50">
+                        <div class="flex items-center">
+                            <input type="radio" wire:model="payment_method" value="card" class="text-black border-gray-300">
+                            <span class="ml-2">Card Payment</span>
+                        </div>
+                        <img src="{{ asset('assets/images/card1.png') }}" alt="Card Payment" class="w-8 h-8 object-contain">
                     </label>
+
+                    @error('payment_method') 
+                        <span class="text-sm text-red-600">{{ $message }}</span> 
+                    @enderror
                 </div>
 
                 <button type="submit" class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition">

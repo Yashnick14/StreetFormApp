@@ -27,6 +27,39 @@ class Checkout extends Component
 
     public $showConfirmModal = false;
 
+    // Validation Rules
+    protected $rules = [
+        'firstname'    => ['required', 'regex:/^[A-Za-z]+$/'],
+        'lastname'     => ['required', 'regex:/^[A-Za-z]+$/'],
+        'email'        => ['required', 'email', 'regex:/^[\w\.-]+@[\w\.-]+\.(com)$/i'],
+        'phone'        => ['required', 'digits:10'],
+        'house_number' => ['required', 'digits_between:1,10'],
+        'street'       => ['required', 'regex:/^[A-Za-z\s]+$/'],
+        'city'         => ['required', 'regex:/^[A-Za-z\s]+$/'],
+        'postal_code'  => ['required', 'digits:5'],
+        'payment_method' => ['required', 'in:cod,card'],
+    ];
+
+    // Custom Error Messages
+    protected $messages = [
+        'firstname.required' => 'First name is required.',
+        'firstname.regex' => 'First name should only contain letters.',
+        'lastname.required' => 'Last name is required.',
+        'lastname.regex' => 'Last name should only contain letters.',
+        'email.required' => 'Email is required.',
+        'email.regex' => 'Email must include @ and end with .com',
+        'phone.required' => 'Phone number is required.',
+        'phone.digits' => 'Phone number must be exactly 10 digits.',
+        'house_number.required' => 'House number is required.',
+        'house_number.regex' => 'House number must only contain digits.',
+        'street.required' => 'Street is required.',
+        'street.regex' => 'Street should only contain letters.',
+        'city.required' => 'City is required.',
+        'city.regex' => 'City should only contain letters.',
+        'postal_code.required' => 'Postal code is required.',
+        'postal_code.digits' => 'Postal code must be exactly 5 digits.',
+    ];
+
     public function mount()
     {
         $this->loadCart();
@@ -40,27 +73,29 @@ class Checkout extends Component
         }
     }
 
-    public function loadCart()
-    {
-        $this->cart = CartModel::where('customer_id', (string) Auth::id())->first();
-        $this->items = $this->cart ? $this->cart->items : [];
+public function loadCart()
+{
+    $this->cart = CartModel::where('customer_id', (string) Auth::id())->first();
+    $this->items = $this->cart ? $this->cart->items : [];
 
-        $this->total = 0;
-        foreach ($this->items as $item) {
-            // ✅ Always attach product details for UI & confirmation modal
-            $item->product = Product::find($item->product_id);
-            if ($item->product) {
-                $this->total += $item->quantity * $item->unitprice;
-            }
+    $this->total = 0;
+
+    foreach ($this->items as $item) {
+        // Attach product manually from MySQL
+        $item->product = Product::find($item->product_id);
+
+        if ($item->product) {
+            $this->total += $item->quantity * $item->unitprice;
         }
     }
+}
+
+
 
     public function placeOrder()
     {
-        if (!$this->house_number || !$this->street || !$this->city || !$this->postal_code) {
-            $this->dispatch('toast', type: 'error', message: 'Please complete your address.');
-            return;
-        }
+        // Validate before proceeding
+        $this->validate();
 
         if (count($this->items) === 0) {
             $this->dispatch('toast', type: 'error', message: 'Your cart is empty.');
@@ -68,16 +103,13 @@ class Checkout extends Component
         }
 
         if ($this->payment_method === 'cod') {
-            // ✅ Re-attach product details to items for confirmation modal
             foreach ($this->items as $item) {
                 $item->product = Product::find($item->product_id);
             }
-
             $this->showConfirmModal = true;
             return;
         }
 
-        // ✅ Card → create pending order then redirect to Stripe
         if ($this->payment_method === 'card') {
             $cartItems = [];
             foreach ($this->items as $item) {
@@ -98,7 +130,6 @@ class Checkout extends Component
                 return;
             }
 
-            // 🔹 Create pending order
             $order = Order::create([
                 'customer_id'    => (string) Auth::user()->customer->id,
                 'firstname'      => $this->firstname,
@@ -115,7 +146,6 @@ class Checkout extends Component
                 'totalprice'     => $this->total,
             ]);
 
-            // 🔹 Save order items (⚠️ DO NOT reduce stock here → Stripe webhook will do it)
             foreach ($cartItems as $ci) {
                 OrderItem::create([
                     'order_id'      => (string) $order->_id,
@@ -126,7 +156,6 @@ class Checkout extends Component
                 ]);
             }
 
-            // 🔹 Send to Stripe
             \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
 
             $lineItems = [];
@@ -187,7 +216,6 @@ class Checkout extends Component
                         'orderprice'    => $item->unitprice,
                     ]);
 
-                    // 🔽 Reduce stock only for COD
                     $stockData = $product->stockquantity ?? [];
                     if ($item->size && isset($stockData[$item->size])) {
                         $stockData[$item->size] = max(0, $stockData[$item->size] - $item->quantity);
@@ -206,7 +234,6 @@ class Checkout extends Component
                 'paymentdate'   => now(),
             ]);
 
-            // Clear cart completely
             $cart = CartModel::where('customer_id', (string) Auth::id())->first();
             if ($cart) {
                 $cart->items()->delete();
@@ -215,7 +242,7 @@ class Checkout extends Component
 
             $this->showConfirmModal = false;
             $this->dispatch('toast', type: 'success', message: 'Order placed successfully!');
-             return redirect()->route('order.confirmation', ['orderId' => $order->_id]);
+            return redirect()->route('order.confirmation', ['orderId' => $order->_id]);
 
         } catch (\Exception $e) {
             \Log::error('Order save failed: '.$e->getMessage());
@@ -225,6 +252,10 @@ class Checkout extends Component
 
     public function render()
     {
+        foreach ($this->items as $item) {
+        $item->product = Product::find($item->product_id);
+        }
+
         return view('livewire.customer.checkout', [
             'items' => $this->items,
             'total' => $this->total

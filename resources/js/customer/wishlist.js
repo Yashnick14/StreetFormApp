@@ -148,8 +148,19 @@ window.getWishlist = async function () {
     }
 };
 
-// auto-load wishlist when on the page
+// Attach event listeners for product page buttons
 document.addEventListener("DOMContentLoaded", () => {
+    // If on product view page
+    document.querySelectorAll(".wishlist-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const productId = btn.getAttribute("data-product-id");
+            if (productId) {
+                window.addToWishlist(productId);
+            }
+        });
+    });
+
+    // If on wishlist page, load wishlist items
     if (document.getElementById("wishlist-container")) {
         window.getWishlist();
     }

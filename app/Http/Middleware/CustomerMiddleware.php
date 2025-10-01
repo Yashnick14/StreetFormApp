@@ -10,12 +10,12 @@ class CustomerMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-        // ✅ Check if user is authenticated first
+        // Check if user is authenticated first
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Please login to access this page.');
         }
 
-        // ✅ Check if authenticated user is a customer
+        // Check if authenticated user is a customer
         $user = Auth::user();
         if ($user->usertype !== 'customer') {
             // Redirect admin users to their dashboard
@@ -27,7 +27,7 @@ class CustomerMiddleware
             return redirect()->route('login')->with('error', 'Unauthorized access. Customers only.');
         }
 
-        // ✅ User is authenticated AND is a customer
+        // User is authenticated AND is a customer
         return $next($request);
     }
 }
