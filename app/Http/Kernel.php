@@ -33,14 +33,14 @@ class Kernel extends HttpKernel
      *
      * @var array<string, class-string|string>
      */
-protected $routeMiddleware = [
-    // Default Laravel
-    'auth' => \App\Http\Middleware\Authenticate::class,
-    'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+        protected $routeMiddleware = [
+            // Default Laravel
+            'auth' => \App\Http\Middleware\Authenticate::class,
+            'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
 
-    // Custom
-    'admin' => \App\Http\Middleware\AdminMiddleware::class,
-    'customer' => \App\Http\Middleware\CustomerMiddleware::class,
-];
+            // Custom
+            'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            'customer' => \App\Http\Middleware\CustomerMiddleware::class,
+        ];
 
 }
