@@ -6,11 +6,26 @@ const API_BASE = "/api/products";
 
 window.showError = function (msg) {
     const el = document.getElementById("error-box");
+    if (!el) return;
     el.textContent = msg;
     el.classList.remove("hidden");
+    el.classList.remove("bg-green-100", "text-green-700");
+    el.classList.add("bg-red-100", "text-red-700");
 };
+
+window.showSuccess = function (msg) {
+    const el = document.getElementById("error-box");
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.remove("hidden");
+    el.classList.remove("bg-red-100", "text-red-700");
+    el.classList.add("bg-green-100", "text-green-700");
+};
+
 window.hideError = function () {
-    document.getElementById("error-box").classList.add("hidden");
+    const el = document.getElementById("error-box");
+    if (!el) return;
+    el.classList.add("hidden");
 };
 
 window.showModalLoading = function (text = "Loading...") {
@@ -64,7 +79,6 @@ window.setSaveButtonLoading = function (loading = false) {
 };
 
 window.resetForm = function () {
-    hideError();
     hideModalLoading();
     setSaveButtonLoading(false);
     document.getElementById("product-id").value = "";
@@ -254,19 +268,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 closeModal();
                 Livewire.dispatch("refresh");
+                showSuccess(
+                    id
+                        ? "Product updated successfully!"
+                        : " Product added successfully!"
+                );
             } catch (err) {
                 setSaveButtonLoading(false);
-                closeModal();
                 const errors = err.response?.data?.errors;
                 if (errors) {
                     const firstError = Object.values(errors)[0][0];
-                    showError("❌ " + firstError);
+                    showError(" " + firstError);
                 } else {
                     showError(
                         "Save failed: " +
                             (err.response?.data?.message || err.message)
                     );
                 }
+                closeModal();
             }
         });
 
@@ -341,6 +360,7 @@ window.confirmDeleteProduct = async function () {
         await axios.delete(`${API_BASE}/${deleteProductId}`);
         Livewire.dispatch("refresh");
         closeDeleteModal();
+        showSuccess(" Product deleted successfully!");
     } catch (err) {
         closeDeleteModal();
         showError(
