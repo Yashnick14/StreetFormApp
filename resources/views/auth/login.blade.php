@@ -81,3 +81,28 @@
         </div>
     </div>
 </x-guest-layout>
+
+{{-- Toast triggers for session messages --}}
+@if (session('error'))
+    <script>
+        window.dispatchEvent(new CustomEvent('toast', {
+            detail: { type: 'error', message: "{{ session('error') }}" }
+        }));
+    </script>
+@endif
+
+@if (session('success'))
+    <script>
+        window.dispatchEvent(new CustomEvent('toast', {
+            detail: { type: 'success', message: "{{ session('success') }}" }
+        }));
+    </script>
+@endif
+
+@if (session('status'))
+    <script>
+        window.dispatchEvent(new CustomEvent('toast', {
+            detail: { type: 'success', message: "{{ session('status') }}" }
+        }));
+    </script>
+@endif

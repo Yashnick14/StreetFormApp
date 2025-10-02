@@ -48,9 +48,9 @@
             <div>
                 <h6 class="text-white font-medium mb-4">FOLLOW US</h6>
                 <ul class="flex space-x-4">
-                    <li><a href="#"><i class="fab fa-facebook text-blue-600 text-xl"></i></a></li>
-                    <li><a href="#"><i class="fab fa-linkedin text-blue-500 text-xl"></i></a></li>
-                    <li><a href="#"><i class="fab fa-instagram text-pink-500 text-xl"></i></a></li>
+                    <li><a href="#"><i class="fab fa-facebook text-white text-xl"></i></a></li>
+                    <li><a href="#"><i class="fa-brands fa-x-twitter text-white text-xl"></i></a></li>
+                    <li><a href="#"><i class="fab fa-instagram text-white text-xl"></i></a></li>
                 </ul>
             </div>
         </div>

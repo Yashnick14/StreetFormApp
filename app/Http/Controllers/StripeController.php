@@ -42,7 +42,7 @@ class StripeController extends Controller
             'line_items' => $lineItems,
             'success_url' => route('checkout.success', ['orderId' => $request->order_id]) . '?session_id={CHECKOUT_SESSION_ID}',
             'cancel_url'  => env('STRIPE_CANCEL_URL'),
-            // ✅ Always cast to string for Mongo consistency
+            // Always cast to string for Mongo consistency
             'metadata' => [
                 'order_id'    => (string) ($request->order_id ?? null),
                 'customer_id' => auth()->check() ? (string) auth()->user()->customer->id : null,
@@ -96,7 +96,7 @@ class StripeController extends Controller
         try {
             $event = \Stripe\Webhook::constructEvent($payload, $sigHeader, $secret);
         } catch (\Exception $e) {
-            \Log::error("❌ Stripe webhook signature error: " . $e->getMessage());
+            \Log::error("Stripe webhook signature error: " . $e->getMessage());
             return response()->json(['error' => 'Invalid signature'], 400);
         }
 
@@ -110,11 +110,11 @@ class StripeController extends Controller
                 $order = Order::find($orderId);
 
                 if ($order) {
-                    // ✅ Mark order as paid
+                    // Mark order as paid
                     $order->update(['orderstatus' => 'paid']);
-                    \Log::info("✅ Order marked as paid", ['order_id' => (string) $order->_id]);
+                    \Log::info("Order marked as paid", ['order_id' => (string) $order->_id]);
 
-                    // ✅ Save payment
+                    // Save payment
                     try {
                         $payment = Payment::create([
                             'order_id'      => (string) $order->_id,
@@ -123,14 +123,14 @@ class StripeController extends Controller
                             'paymentdate'   => now(),
                         ]);
 
-                        \Log::info("✅ Payment saved", $payment->toArray());
+                        \Log::info("Payment saved", $payment->toArray());
                     } catch (\Exception $e) {
-                        \Log::error("❌ Payment save failed: " . $e->getMessage(), [
+                        \Log::error("Payment save failed: " . $e->getMessage(), [
                             'order_id' => (string) $order->_id
                         ]);
                     }
 
-                    // ✅ Reduce stock based on order items
+                    // Reduce stock based on order items
                     try {
                         $orderItems = OrderItem::where('order_id', (string) $order->_id)->get();
                         foreach ($orderItems as $item) {
@@ -148,12 +148,12 @@ class StripeController extends Controller
                         }
                         \Log::info("📦 Stock reduced for order", ['order_id' => (string) $order->_id]);
                     } catch (\Exception $e) {
-                        \Log::error("❌ Stock reduction failed: " . $e->getMessage(), [
+                        \Log::error("Stock reduction failed: " . $e->getMessage(), [
                             'order_id' => (string) $order->_id
                         ]);
                     }
 
-                    // ✅ Clear cart
+                    // Clear cart
                     if ($customerId) {
                         $cart = Cart::where('customer_id', (string) $customerId)->first();
                         if ($cart) {
@@ -167,7 +167,7 @@ class StripeController extends Controller
                                 'cart_id'     => (string) $cart->_id
                             ]);
                         } else {
-                            \Log::warning("⚠️ No cart found for customer", [
+                            \Log::warning("No cart found for customer", [
                                 'customer_id' => (string) $customerId
                             ]);
                         }

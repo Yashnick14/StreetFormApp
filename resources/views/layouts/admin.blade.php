@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
-     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
+    <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
 
     @if(session('api_token'))
     <meta name="api-token" content="{{ session('api_token') }}">
@@ -14,7 +14,7 @@
     @endif
 
 
-    <title>@yield('title', config('app.name', 'Laravel'))</title>
+    <title>@yield('title', config('app.name', 'StreetForm'))</title>
 
     {{-- Vite compiled assets --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
