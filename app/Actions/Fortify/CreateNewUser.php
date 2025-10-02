@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 use Laravel\Jetstream\Jetstream;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
+
 
 class CreateNewUser implements CreatesNewUsers
 {
@@ -18,42 +20,64 @@ class CreateNewUser implements CreatesNewUsers
     /**
      * Validate and create a newly registered user.
      */
-   public function create(array $input): User
-{
-    Log::info('Register request received', $input);
+    public function create(array $input): User
+    {
+        Log::info('Register request received', $input);
 
-    Validator::make($input, [
-        'username'   => ['required', 'string', 'max:120', 'unique:users,username'],
-        'firstname'  => ['nullable', 'string', 'max:120'],
-        'lastname'   => ['nullable', 'string', 'max:120'],
-        'email'      => ['required', 'string', 'email', 'max:180', 'unique:users,email'],
-        'phone'      => ['required', 'regex:/^[0-9]{10}$/', 'unique:user_phones,phone'],
-        'password'   => $this->passwordRules(),
-        'terms'      => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
-    ])->validate();
+        // Base validation
+        Validator::make($input, [
+            'username'   => ['required', 'string', 'max:120'],
+            'firstname'  => ['required', 'string', 'max:120'],
+            'lastname'   => ['required', 'string', 'max:120'],
+            'email'      => ['required', 'string', 'email', 'max:180'],
+            'phone'      => ['required', 'regex:/^[0-9]{10}$/'],
+            'password'   => ['required', 'string', 'min:6', 'confirmed'],
+            'terms'      => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
+        ])->validate();
 
-    Log::info('Validation passed ✅');
+        // Manual duplicate check
+        if (User::where('username', $input['username'])->exists()) {
+            throw ValidationException::withMessages([
+                'username' => 'Username already taken. Please choose another.',
+            ]);
+        }
 
-    $user = User::create([
-        'username'  => $input['username'],
-        'firstname' => $input['firstname'] ?? null,
-        'lastname'  => $input['lastname'] ?? null,
-        'email'     => $input['email'],
-        'password'  => Hash::make($input['password']),
-        'status'    => 'active',
-         'usertype'  => $input['email'] === 'yashnick514@gmail.com' ? 'admin' : 'customer',
-    ]);
+        if (User::where('email', $input['email'])->exists()) {
+            throw ValidationException::withMessages([
+                'email' => 'Email already in use. Try another email.',
+            ]);
+        }
 
-    Log::info('User created ✅', ['id' => $user->id]);
+        if (UserPhone::where('phone', $input['phone'])->exists()) {
+            throw ValidationException::withMessages([
+                'phone' => 'Phone number already in use. Try another number.',
+            ]);
+        }
 
-    Customer::create(['user_id' => $user->id]);
-    UserPhone::create([
-        'user_id' => $user->id,
-        'phone'   => $input['phone'],
-    ]);
+        Log::info('Validation passed ✅');
 
-    Log::info('Customer + Phone created ✅');
+        // Create user
+        $user = User::create([
+            'username'  => $input['username'],
+            'firstname' => $input['firstname'],
+            'lastname'  => $input['lastname'],
+            'email'     => $input['email'],
+            'password'  => Hash::make($input['password']),
+            'status'    => 'active',
+            'usertype'  => $input['email'] === 'yashnick514@gmail.com' ? 'admin' : 'customer',
+        ]);
 
-    return $user;
-}
+        Log::info('User created ✅', ['id' => $user->id]);
+
+        Customer::create(['user_id' => $user->id]);
+
+        UserPhone::create([
+            'user_id' => $user->id,
+            'phone'   => $input['phone'],
+        ]);
+
+        Log::info('Customer + Phone created ✅');
+
+        return $user;
+    }
 }

@@ -19,8 +19,8 @@ class AuthController extends Controller
     {
         $request->validate([
             'username'  => 'required|string|max:120|unique:users,username',
-            'firstname' => 'nullable|string|max:120',
-            'lastname'  => 'nullable|string|max:120',
+            'firstname' => 'required|string|max:120',
+            'lastname'  => 'required|string|max:120',
             'email'     => 'required|string|email|max:180|unique:users,email',
             'phone'     => 'required|regex:/^[0-9]{10}$/|unique:user_phones,phone',
             'password'  => 'required|string|min:6',
@@ -46,6 +46,20 @@ class AuthController extends Controller
         // attach customer profile
         if ($user->usertype === 'customer') {
             Customer::create(['user_id' => $user->id]);
+        }
+        
+        // Manual duplicate check
+        $existingUser = User::where('username', $input['username'])
+            ->orWhere('email', $input['email'])
+            ->orWhereHas('phones', function ($q) use ($input) {
+                $q->where('phone', $input['phone']);
+            })
+            ->first();
+
+        if ($existingUser) {
+            throw ValidationException::withMessages([
+                'email' => '⚠️ User already exists. Please login.',
+            ]);
         }
 
         // store phone

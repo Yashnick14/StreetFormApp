@@ -45,14 +45,14 @@
                     <div class="mt-4">
                         <x-label for="firstname" value="First Name" />
                         <x-input id="firstname" class="block mt-1 w-full"
-                                 type="text" name="firstname" :value="old('firstname')" />
+                                 type="text" name="firstname" :value="old('firstname')" required />
                     </div>
 
                     <!-- Last Name -->
                     <div class="mt-4">
                         <x-label for="lastname" value="Last Name" />
                         <x-input id="lastname" class="block mt-1 w-full"
-                                 type="text" name="lastname" :value="old('lastname')" />
+                                 type="text" name="lastname" :value="old('lastname')" required />
                     </div>
 
                     <!-- Email -->
