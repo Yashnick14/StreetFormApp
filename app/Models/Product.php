@@ -27,12 +27,6 @@ class Product extends Model
         'stockquantity' => 'array', 
     ];
 
-    // 1 Product → M Review
-    public function reviews()
-    {
-        return $this->hasMany(Review::class);
-    }
-
     // 1 Product → M CartItem
     public function cartItems()
     {

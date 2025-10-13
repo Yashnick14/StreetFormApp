@@ -18,18 +18,6 @@ class Customer extends Model
         return $this->belongsTo(User::class);
     }
 
-    // 1 Customer → 1 Review
-    public function review()
-    {
-        return $this->hasOne(Review::class);
-    }
-
-    // 1 Customer → M Address
-    public function addresses()
-    {
-        return $this->hasMany(Address::class);
-    }
-
     // 1 Customer → 1 Cart
     public function cart()
     {

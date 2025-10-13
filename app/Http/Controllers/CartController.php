@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Cart;
 use App\Models\CartItem;
-use App\Models\Product; // MySQL Product
+use App\Models\Product; // MySQL
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 

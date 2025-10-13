@@ -26,7 +26,7 @@
         <!-- Top Navbar -->
         @include('partials.admin-navbar')
 
-        <div class="flex flex-1">
+        <div class="flex flex-1 pt-10">
             <!-- Sidebar -->
             @include('partials.admin-sidebar')
 

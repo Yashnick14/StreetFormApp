@@ -24,7 +24,6 @@ class ProductResource extends JsonResource
                 'id'   => $this->category->id,
                 'name' => $this->category->name,
             ]),
-            'reviews'        => ReviewResource::collection($this->whenLoaded('reviews')),
             'cart_items'     => CartItemResource::collection($this->whenLoaded('cartItems')),
             'wishlist_items' => WishlistItemResource::collection($this->whenLoaded('wishlistItems')),
             'order_items'    => OrderItemResource::collection($this->whenLoaded('orderItems')),

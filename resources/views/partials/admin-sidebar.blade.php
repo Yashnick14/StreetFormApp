@@ -27,10 +27,5 @@
            class="px-4 py-2 rounded-lg transition hover:bg-gray-900 text-white">
             Orders
         </a>
-
-        <a href="#" 
-           class="px-4 py-2 rounded-lg transition hover:bg-gray-900 text-white">
-            Reports
-        </a>
     </nav>
 </aside>

@@ -165,3 +165,44 @@ document.addEventListener("DOMContentLoaded", () => {
         window.getWishlist();
     }
 });
+
+// ========== PRODUCT PAGE QUANTITY LIMIT ==========
+document.addEventListener("DOMContentLoaded", () => {
+    const sizeButtons = document.querySelectorAll(".size-btn");
+    const quantityInput = document.getElementById("quantity-input");
+    const stockInfo = document.getElementById("stock-info");
+
+    if (!sizeButtons.length || !quantityInput) return; // not on product page
+
+    sizeButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+            sizeButtons.forEach((btn) =>
+                btn.classList.remove(
+                    "ring-2",
+                    "ring-black",
+                    "bg-gray-900",
+                    "text-white"
+                )
+            );
+            button.classList.add(
+                "ring-2",
+                "ring-black",
+                "bg-gray-900",
+                "text-white"
+            );
+
+            const stock = parseInt(button.dataset.stock, 10);
+            quantityInput.max = stock;
+            quantityInput.value = 1;
+
+            stockInfo.textContent = `Only ${stock} left in stock`;
+            stockInfo.classList.remove("hidden");
+        });
+    });
+
+    quantityInput.addEventListener("input", () => {
+        const max = parseInt(quantityInput.max, 10);
+        const val = parseInt(quantityInput.value, 10);
+        if (val > max) quantityInput.value = max;
+    });
+});

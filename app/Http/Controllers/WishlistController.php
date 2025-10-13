@@ -15,7 +15,7 @@ class WishlistController extends Controller
      */
     public function index()
     {
-        // ✅ Get the correct customer_id from the logged-in user
+        // Get the correct customer_id from the logged-in user
         $customerId = Auth::user()->customer->id;
 
         $wishlist = Wishlist::firstOrCreate([
@@ -41,7 +41,7 @@ class WishlistController extends Controller
             'product_id' => 'required|exists:products,id',
         ]);
 
-        // ✅ Use customer_id, not user_id
+        // Use customer_id, not user_id
         $customerId = Auth::user()->customer->id;
 
         $wishlist = Wishlist::firstOrCreate([
@@ -76,7 +76,6 @@ class WishlistController extends Controller
      */
     public function destroy($id)
     {
-        // ✅ Fix here too
         $customerId = Auth::user()->customer->id;
 
         $wishlist = Wishlist::where('customer_id', $customerId)->first();

@@ -58,7 +58,7 @@ class AuthController extends Controller
 
         if ($existingUser) {
             throw ValidationException::withMessages([
-                'email' => '⚠️ User already exists. Please login.',
+                'email' => ' User already exists. Please login.',
             ]);
         }
 
@@ -97,7 +97,7 @@ class AuthController extends Controller
         if ($user->status === 'inactive') {
             Auth::logout();
 
-            return back()->with('error', '⚠️ Account inactive. Please contact support.')
+            return back()->with('error', ' Account inactive. Please contact support.')
                         ->withInput();
         }
         $token = $user->createToken('api_token')->plainTextToken;

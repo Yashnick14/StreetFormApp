@@ -20,10 +20,10 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'name'        => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'description' => 'required|string',
             'price'       => 'required|numeric|min:0',
             'sizes'       => 'required|array',
-            'sizes.*'     => 'nullable|integer|min:0',
+            'sizes.*'     => 'required|integer|min:0',
             'category_id' => 'required|exists:categories,id',
             'type'        => 'required|string',
             'image'       => 'nullable|image|max:4000',
@@ -32,6 +32,11 @@ class ProductController extends Controller
             'image4'      => 'nullable|image|max:4000',
         ]);
 
+            if (collect($validated['sizes'])->sum() === 0) {
+                throw ValidationException::withMessages([
+                    'sizes' => ['At least one size must have stock greater than 0.'],
+                ]);
+            }
         // Prevent duplicate product with same name + category
         $exists = Product::where('name', $validated['name'])
             ->where('category_id', $validated['category_id'])
@@ -69,10 +74,10 @@ class ProductController extends Controller
 
         $validated = $request->validate([
             'name'        => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'description' => 'required|string',
             'price'       => 'required|numeric|min:0',
             'sizes'       => 'required|array',
-            'sizes.*'     => 'nullable|integer|min:0',
+            'sizes.*'     => 'required|integer|min:0',
             'category_id' => 'required|exists:categories,id',
             'type'        => 'required|string',
             'image'       => 'nullable|image|max:4000',
@@ -80,6 +85,12 @@ class ProductController extends Controller
             'image3'      => 'nullable|image|max:4000',
             'image4'      => 'nullable|image|max:4000',
         ]);
+
+        if (collect($validated['sizes'])->sum() === 0) {
+        throw ValidationException::withMessages([
+            'sizes' => ['At least one size must have stock greater than 0.'],
+        ]);
+        }
 
         // Prevent duplicate product with same name + category (ignore current product)
         $exists = Product::where('name', $validated['name'])

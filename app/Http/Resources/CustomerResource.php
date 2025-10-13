@@ -22,7 +22,6 @@ class CustomerResource extends JsonResource
             'cart'      => new CartResource($this->whenLoaded('cart')),
             'wishlist'  => new WishlistResource($this->whenLoaded('wishlist')),
             'orders'    => OrderResource::collection($this->whenLoaded('orders')),
-            'review'    => new ReviewResource($this->whenLoaded('review')),
             'created_at'=> $this->created_at,
             'updated_at'=> $this->updated_at,
         ];

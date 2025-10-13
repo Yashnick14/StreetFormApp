@@ -121,7 +121,6 @@
             </div>
         </div>
     </div>
-
     @vite('resources/js/customer/wishlist.js')
     @vite('resources/js/customer/cart.js')
 </x-app-layout>

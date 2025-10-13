@@ -44,7 +44,7 @@ class AllProducts extends Component
     {
         $this->selectedTypes = [];
         $this->selectedSizes = [];
-        $this->selectedCategories = []; // ✅ reset too
+        $this->selectedCategories = [];
         $this->minPrice = $this->floor;
         $this->maxPrice = $this->ceil;
         $this->resetPage();
@@ -54,7 +54,7 @@ class AllProducts extends Component
     {
         $query = Product::query();
 
-        // ✅ Category filter (only in "All" page)
+        // Category filter (only in "All" page)
         if (!empty($this->selectedCategories)) {
             $query->whereIn('category_id', $this->selectedCategories);
         }
