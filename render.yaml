@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: streetformapp
+    env: docker
+    dockerfilePath: ./Dockerfile
+    branch: main
+    plan: free
+    autoDeploy: true
+    buildCommand: "composer install --no-dev --optimize-autoloader && php artisan config:cache && php artisan route:cache"
+    startCommand: "php-fpm"
