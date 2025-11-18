@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import laravel from "laravel-vite-plugin";
 
 export default defineConfig({
+    base: "/build/", // Serve assets from root
     plugins: [
         laravel({
             input: [
@@ -15,5 +16,4 @@ export default defineConfig({
             refresh: true,
         }),
     ],
-    base: "/build/", // <-- This is important for production
 });
