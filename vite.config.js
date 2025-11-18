@@ -15,4 +15,5 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    base: "/build/", // <-- This is important for production
 });
