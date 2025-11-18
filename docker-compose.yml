@@ -24,8 +24,8 @@ services:
             DB_DATABASE: streetform-laravel
             DB_USERNAME: root
             DB_PASSWORD: secret
-        volumes:
-            - .:/var/www/html
+        # volumes:
+        #     - .:/var/www/html
         networks:
             - streetform-network
 
