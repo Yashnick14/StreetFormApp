@@ -13,9 +13,9 @@ services:
             - mysql
             - postgres
         environment:
-            APP_ENV: local
+            APP_ENV: production
             APP_KEY: base64:zKhRGcEST6M3MNnMid9b1RHJEuYgVaDCwPMV+7TouxQ=
-            APP_DEBUG: true
+            APP_DEBUG: false
             APP_URL: http://localhost:8000
             # Use MySQL locally (change to pgsql to test PostgreSQL)
             DB_CONNECTION: mysql
